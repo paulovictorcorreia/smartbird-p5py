@@ -2,7 +2,6 @@ import numpy as np
 from p5 import *
 
 class Bird:
-    
     def __init__(self):
         self.y = height/2
         self.x = 25
@@ -12,6 +11,7 @@ class Bird:
         self.lift = -15
         self.asset_up = load_image("assets/frame-2.png")
         self.asset_down = load_image("assets/frame-3.png")
+        self.scoreFlag = False
 
 
     def show(self):
@@ -46,4 +46,17 @@ class Bird:
         self.velocity += self.gravity
         self.velocity *= 0.9
         self.y += self.velocity
+
+    def scored(self, pipes):
+        if len(pipes) == 0:
+            self.scoreFlag = False
+            return False
+        elif (self.x > pipes[0].x + pipes[0].w) and (self.scoreFlag == False):
+            self.scoreFlag = True
+            return True
+        else:
+            return False
+    
+    def scoreAgain(self):
+        self.scoreFlag = False
     

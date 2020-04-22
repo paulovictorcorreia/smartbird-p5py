@@ -3,7 +3,7 @@ import numpy as np
 
 class Pipe:
     def __init__(self):
-        self.height = 150
+        self.height = 100
         self.top = random_uniform(height/2)
         self.bottom = self.top + self.height
         self.x = width
@@ -18,7 +18,7 @@ class Pipe:
         return False
 
     def show(self):
-        fill(255)
+        fill(82,208,83)
         rect((self.x, 0), self.w, self.top)
         rect((self.x, self.bottom), self.w, height - self.bottom)
     
@@ -32,8 +32,4 @@ class Pipe:
             return False
     
     def stopAnimation(self):
-        if self.hits:
-            self.speed = 0
-
-    #def birdScored(self, bird):
-    #    if bird.x
+        self.speed = 0

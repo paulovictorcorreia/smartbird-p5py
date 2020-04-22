@@ -21,8 +21,8 @@ def setup():
     pipes.append(Pipe())
 
 def draw():
-    background(128)
-    global bird, pipes, gamestate
+    background(118,88,152)
+    global bird, pipes, gamestate, count
     for i in range(len(pipes)-1, -1, -1):
         pipes[i].show()
         pipes[i].update()
@@ -33,6 +33,7 @@ def draw():
 
         if pipes[i].offscreen():
             pipes.pop(i)
+            bird.scoreAgain()
     #Condition to stop game if player dies
     #Used when there is no generic algorithm running
     if frame_count % 45 == 0 and gamestate:
@@ -40,6 +41,11 @@ def draw():
     bird.update(gamestate)
     bird.show()
     bird.edges()
+    if bird.scored(pipes) and gamestate:
+        count += 1
+    
+    fill(255)
+    text(f"Score: {count}", (30, 30))
 
 
 def key_pressed():
@@ -56,8 +62,9 @@ def mouse_pressed():
         startGame()
 
 def startGame():
-    global bird
+    global bird, count
     bird = Bird()
+    count = 0
 
 if __name__ == '__main__':
     run()
