@@ -15,6 +15,7 @@ bird = None
 pipes = []
 gamestate = True
 count = 0
+
 def setup():
     size(400, 600)
     startGame()
@@ -43,6 +44,7 @@ def draw():
     bird.edges()
     if bird.scored(pipes) and gamestate:
         count += 1
+        print(bird.score)
     
     fill(255)
     text(f"Score: {count}", (30, 30))
@@ -67,4 +69,5 @@ def startGame():
     count = 0
 
 if __name__ == '__main__':
-    run()
+    run(frame_rate=60)
+
