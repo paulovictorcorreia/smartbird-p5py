@@ -15,13 +15,14 @@ birds = []
 savedBirds = []
 pipes = []
 gamestate = True
-number_birds = 125
+number_birds = 200
 count = 0
 generations = 1
+slide = None
 
 def setup():
     size(400, 600)
-    global birds, pipes, number_birds, generations
+    global birds, pipes, number_birds, generations, slider
     for i in range(number_birds):
         birds.append(Bird())
     print(generations)
@@ -30,8 +31,7 @@ def setup():
 
 def draw():
     background(118,88,152)
-    global birds, pipes, count, number_birds, savedBirds, generations
-
+    global birds, pipes, count, number_birds, savedBirds, generations, slider
     if count % 75 == 0:
         pipes.append(Pipe())
 
@@ -39,6 +39,7 @@ def draw():
         count = 0
         generations += 1
         print(generations)
+        # print(savedBirds[-1].score)
         nextGeneration()
         pipes = []
         pipes.append(Pipe())
@@ -49,17 +50,23 @@ def draw():
         for j in range(len(birds)-1, -1, -1):
             if pipes[i].hits(birds[j]):
                 birds[j].fitness -= 15
+                # print(len(birds))
                 savedBirds.append(birds.pop(j))
             if pipes[i].offscreen():
                 pipes.pop(i)
                 birds[j].scoreAgain()
     
-    for i in range(len(birds)):
+    for i in range(len(birds)-1, -1, -1):
+        
         birds[i].think(pipes)
         birds[i].update(gamestate)
         birds[i].show()
-        birds[i].edges()
-    # print(len(birds))
+        # birds[i].edges()
+        if birds[i].scored(pipes): 
+            birds[i].increaseScoreGA()
+        if birds[i].offScreen():
+            savedBirds.append(birds.pop(i))
+        # print(len(birds))
 
 
 def nextGeneration():
@@ -67,19 +74,26 @@ def nextGeneration():
     birds = []
     calculateFitness()
     for i in range(number_birds):
-        birds.append(pickOne())
+        birds.append(pickOne()),
+
     savedBirds = []
+    # for i in range(number_birds):
+    #     print(birds[i].brain.weights_ih)
+    #     print(birds[i].brain.weights_ho)
+    #     print()
 
 def pickOne():
-    global savedBirds, birds
-    probability = []
-    for i in range(len(savedBirds)):
-        prob = savedBirds[i].fitness
-        probability.append(prob)
-    child = np.random.choice(savedBirds, p=probability)
-    brain = child.brain
-    new_bird = Bird(brain)
-    new_bird.mutate(0.01)
+    global savedBirds
+    index = 0
+    r = np.random.random()
+    # print(r)
+    while r > 0:
+        r = r - savedBirds[index].fitness
+        index += 1
+    index -= 1
+    bird = savedBirds[index]
+    new_bird = Bird(bird.brain)
+    new_bird.mutate(0.05)
     return new_bird
 
 def calculateFitness():
@@ -87,8 +101,8 @@ def calculateFitness():
     sum_score = 0
     for bird in savedBirds:
         sum_score += bird.score 
-    for bird in savedBirds:
-        bird.fitness = bird.score / sum_score
+    for i in range(len(savedBirds)-1, -1, -1):
+        savedBirds[i].fitness = savedBirds[i].score / sum_score
 
 
 def startGame():

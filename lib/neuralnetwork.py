@@ -88,24 +88,26 @@ class NeuralNetwork:
         return output_array
 
     def mutate(self, mutationRate):
-        ratio = np.random.random()
-        weights_ho_reshaped = self.weights_ho.flatten()
-        for i, weight in enumerate(weights_ho_reshaped):
-            if ratio < mutationRate:
-                weights_ho_reshaped[i] += np.random.normal(loc=0, scale=0.1)
-        self.weights_ho = weights_ho_reshaped.reshape((self.outputLayer, self.hiddenLayer))
+        
+        for i, weights in enumerate(self.weights_ho):
+            for j, weight in enumerate(weights):
+                ratio = np.random.random()
+                if ratio < mutationRate:
+                    self.weights_ho[i][j] += np.random.normal(0, 0.1)
 
-        weights_ih_reshaped = self.weights_ih.flatten()
-        for i, weight in enumerate(self.weights_ih):
+        for i, weights in enumerate(self.weights_ih):
+            for j, weight in enumerate(weights):
+                ratio = np.random.random()
+                if ratio < mutationRate:
+                    self.weights_ih[i][j] += np.random.normal(0, 0.1)
+                    
+        for i, weights in enumerate(self.bias_h):
+            ratio = np.random.random()
             if ratio < mutationRate:
-                weights_ih_reshaped += np.random.normal(loc=0, scale=0.1)
-        self.weights_ih = weights_ih_reshaped.reshape((self.hiddenLayer, self.inputLayer))
-
-        for i, weight in enumerate(self.bias_h):
+                self.bias_h[i] += np.random.normal(0, 0.1)
+        
+        for i, weights in enumerate(self.bias_o):
+            ratio = np.random.random()
             if ratio < mutationRate:
-                self.bias_h[i] += np.random.normal(loc=0, scale=0.1)
-
-        for i, weight in enumerate(self.bias_o):
-            if ratio < mutationRate:
-                self.bias_o[i] += np.random.normal(loc=0, scale=0.1)
-                
+                self.bias_o[i] += np.random.normal(0, 0.1)
+            

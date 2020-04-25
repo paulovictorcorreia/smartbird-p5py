@@ -12,7 +12,7 @@ class Bird:
         self.radius = 40
         self.gravity = 0.8
         self.velocity = 0
-        self.lift = -10
+        self.lift = -12
         # self.asset_up = load_image("assets/frame-2.png")
         # self.asset_down = load_image("assets/frame-3.png")
         self.scoreFlag = False
@@ -21,7 +21,7 @@ class Bird:
         self.score = 0
         self.fitness = 0
         if brain == None:
-            self.brain = NeuralNetwork(5,5,1)
+            self.brain = NeuralNetwork(5,8,2)
         else:
             self.brain = brain
 
@@ -43,22 +43,23 @@ class Bird:
         closest = pipes[0]
         closestD = np.inf
         for i in range(len(pipes)):
-            d = pipes[i].x - self.x
+            d = (pipes[i].x + pipes[i].w) - self.x
             if d < closestD and d > 0:
                 closestD = pipes[i]
                 closestD = d
         
         inputs = []
 
-        inputs.append(self.y / 10)
-        inputs.append(self.velocity / 10)
-        inputs.append(closest.top /10)
-        inputs.append(closest.bottom / 10)
-        inputs.append(closest.x / 10)
+        inputs.append(self.y)
+        inputs.append(self.velocity)
+        inputs.append(closest.top)
+        inputs.append(closest.bottom)
+        inputs.append(closest.x)
 
         output = self.brain.feedforward(inputs)
-        # print(output)
-        if output[0] > 0.5:
+        # print(output[0])
+
+        if output[0] > 0.5 and self.velocity >= 0:
             self.up()
 
     
@@ -66,7 +67,7 @@ class Bird:
         self.score += 1
 
         self.velocity += self.gravity
-        self.velocity *= 0.99
+        # self.velocity *= 0.9
         self.y += self.velocity
         
 
@@ -102,5 +103,11 @@ class Bird:
         self.scoreFlag = False
 
     def increaseScoreGA(self):
-        self.score += 10*self.scorePoints
+        # self.score += 256*self.scorePoints
+        pass
+    
+    def offScreen(self):
+        return (self.y >= height)
+
+    
     
