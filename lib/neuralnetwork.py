@@ -5,7 +5,6 @@ def dsigmoid(x):
     return x * (1 - x)
 class NeuralNetwork:
     def __init__(self, inputLayer=2, hiddenLayer=2, outputLayer=1, learningRate=0.0001, epochs=100):
-        np.random.seed(42)
         self.inputLayer = inputLayer
         self.hiddenLayer = hiddenLayer
         self.outputLayer = outputLayer
@@ -87,3 +86,28 @@ class NeuralNetwork:
             output_list.append(output)
         output_array = np.array(output_list)
         return output_array
+
+    def mutate(self, mutationRate):
+        
+        for i, weights in enumerate(self.weights_ho):
+            for j, weight in enumerate(weights):
+                ratio = np.random.random()
+                if ratio < mutationRate:
+                    self.weights_ho[i][j] += np.random.normal(0, 0.1)
+
+        for i, weights in enumerate(self.weights_ih):
+            for j, weight in enumerate(weights):
+                ratio = np.random.random()
+                if ratio < mutationRate:
+                    self.weights_ih[i][j] += np.random.normal(0, 0.1)
+                    
+        for i, weights in enumerate(self.bias_h):
+            ratio = np.random.random()
+            if ratio < mutationRate:
+                self.bias_h[i] += np.random.normal(0, 0.1)
+        
+        for i, weights in enumerate(self.bias_o):
+            ratio = np.random.random()
+            if ratio < mutationRate:
+                self.bias_o[i] += np.random.normal(0, 0.1)
+            
