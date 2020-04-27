@@ -12,7 +12,7 @@ class Bird:
         self.radius = 40
         self.gravity = 0.8
         self.velocity = 0
-        self.lift = -12
+        self.lift = -10
         # self.asset_up = load_image("assets/frame-2.png")
         # self.asset_down = load_image("assets/frame-3.png")
         self.scoreFlag = False

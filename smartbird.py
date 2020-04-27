@@ -32,7 +32,7 @@ def setup():
 def draw():
     background(118,88,152)
     global birds, pipes, count, number_birds, savedBirds, generations, slider
-    if count % 75 == 0:
+    if count % 60 == 0:
         pipes.append(Pipe())
 
     if len(birds) == 0:
