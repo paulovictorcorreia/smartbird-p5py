@@ -3,7 +3,7 @@ import numpy as np
 
 class Pipe:
     def __init__(self):
-        self.height = 150
+        self.height = 175
         self.top = random_uniform(height/2)
         self.bottom = self.top + self.height
         self.x = width

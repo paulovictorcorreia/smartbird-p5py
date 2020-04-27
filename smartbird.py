@@ -6,8 +6,8 @@ sys.path.insert(1, "./" )
 import numpy as np
 
 from lib.neuralnetwork import NeuralNetwork
-from models.Pipe import Pipe
-from models.SmartBird import Bird
+from models.Pipe import *
+from models.SmartBird import *
 
 
 
@@ -26,10 +26,14 @@ def setup():
     for i in range(number_birds):
         birds.append(Bird())
     print(generations)
+    # pixels = load_pixels()
+    # print(pixels.values)
+
 
 
 
 def draw():
+    # no_loop()
     background(118,88,152)
     global birds, pipes, count, number_birds, savedBirds, generations, slider
     if count % 60 == 0:
@@ -62,8 +66,8 @@ def draw():
         birds[i].update(gamestate)
         birds[i].show()
         # birds[i].edges()
-        if birds[i].scored(pipes): 
-            birds[i].increaseScoreGA()
+        # if birds[i].scored(pipes): 
+        #     birds[i].increaseScoreGA()
         if birds[i].offScreen():
             savedBirds.append(birds.pop(i))
         # print(len(birds))
@@ -93,7 +97,7 @@ def pickOne():
     index -= 1
     bird = savedBirds[index]
     new_bird = Bird(bird.brain)
-    new_bird.mutate(0.05)
+    new_bird.mutate(0.1)
     return new_bird
 
 def calculateFitness():
