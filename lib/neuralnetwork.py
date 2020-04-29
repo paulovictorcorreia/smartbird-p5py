@@ -93,21 +93,23 @@ class NeuralNetwork:
             for j, weight in enumerate(weights):
                 ratio = np.random.random()
                 if ratio < mutationRate:
-                    self.weights_ho[i][j] += np.random.normal(0, 0.1)
+                    self.weights_ho[i][j] += np.random.normal(0, 0.1) * 0.5
 
         for i, weights in enumerate(self.weights_ih):
             for j, weight in enumerate(weights):
                 ratio = np.random.random()
                 if ratio < mutationRate:
-                    self.weights_ih[i][j] += np.random.normal(0, 0.1)
+                    self.weights_ih[i][j] += np.random.normal(0, 0.1) * 0.5
                     
         for i, weights in enumerate(self.bias_h):
             ratio = np.random.random()
             if ratio < mutationRate:
-                self.bias_h[i] += np.random.normal(0, 0.1)
+                self.bias_h[i] += np.random.normal(0, 0.1) * 0.5
         
         for i, weights in enumerate(self.bias_o):
             ratio = np.random.random()
             if ratio < mutationRate:
-                self.bias_o[i] += np.random.normal(0, 0.1)
-            
+                self.bias_o[i] += np.random.normal(0, 0.1) * 0.5
+        
+    def copy(self):
+        return NeuralNetwork(self.inputLayer, self.hiddenLayer, self.outputLayer)

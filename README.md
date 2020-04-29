@@ -4,6 +4,8 @@ In this repository, there is the code of a neuroevolution flappybird, which uses
 neural networks to make the bird learn how to beat the game. There will be a player script and a genetic algorithm script
 to learn to play the game.
 
+![Smart Bird Run](figures/smartbird.gif)
+
 
 To run the player version, enter the sketches directory and run:
 
