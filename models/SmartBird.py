@@ -13,17 +13,25 @@ class Bird:
         self.gravity = 0.9
         self.velocity = 0
         self.lift = -12
+
+
+
         # self.asset_up = load_image("assets/frame-2.png")
         # self.asset_down = load_image("assets/frame-3.png")
+        self.color = 255, 75
+
+
         self.scoreFlag = False
         self.scorePoints = 1
-
         self.score = 0
         self.fitness = 0
         if brain == None:
             self.brain = NeuralNetwork(5,8,2)
         else:
             self.brain = brain.copy()
+
+    def setColor(self, color):
+        self.color = color
 
     def mutate(self, mutationRate):
         self.brain.mutate(mutationRate)
@@ -34,7 +42,7 @@ class Bird:
         # image(self.asset_up, (self.x, self.y), size=(self.radius, self.radius))
         # image_mode(CENTER)
         no_stroke()
-        fill(255, 75)
+        fill(*self.color)
         circle((self.x, self.y), self.radius)
 
     def think(self, pipes):
