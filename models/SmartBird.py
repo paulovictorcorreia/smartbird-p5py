@@ -10,9 +10,9 @@ class Bird:
         self.y = height/2
         self.x = 25
         self.radius = 40
-        self.gravity = 0.9
+        self.gravity = 1
         self.velocity = 0
-        self.lift = -12
+        self.lift = -10
 
 
 
@@ -26,7 +26,7 @@ class Bird:
         self.score = 0
         self.fitness = 0
         if brain == None:
-            self.brain = NeuralNetwork(5,8,2)
+            self.brain = NeuralNetwork(5,20,2)
         else:
             self.brain = brain.copy()
 
@@ -60,8 +60,8 @@ class Bird:
 
             inputs.append(self.y)
             inputs.append(max(0, self.velocity) / 10)
-            inputs.append(closest.top)
-            inputs.append(closest.bottom)
+            inputs.append(closest.top - self.y)
+            inputs.append(closest.bottom - self.y)
             inputs.append(closest.x)
 
             output = self.brain.feedforward(inputs)
@@ -73,7 +73,7 @@ class Bird:
     
     def update(self, gamestate):
         self.scorePoints += 1
-        self.score = np.log(self.scorePoints) * self.scorePoints
+        self.score = (self.scorePoints)
 
         self.velocity += self.gravity
         self.velocity *= 0.9

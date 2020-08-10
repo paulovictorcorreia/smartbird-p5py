@@ -28,7 +28,7 @@ birds = []
 savedBirds = []
 pipes = []
 gamestate = True
-number_birds = 200
+number_birds = 100
 count = 0
 generations = 1
 
@@ -134,7 +134,7 @@ def pickOne():
     index -= 1
     bird = savedBirds[index]
     new_bird = Bird(bird.brain)
-    new_bird.mutate(0.05)
+    new_bird.mutate(0.01)
     return new_bird
 
 def calculateFitness():
