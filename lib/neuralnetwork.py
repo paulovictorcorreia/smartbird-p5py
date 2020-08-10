@@ -3,6 +3,12 @@ def sigmoid(x):
     return 1/(1+np.exp(-x))
 def dsigmoid(x):
     return x * (1 - x)
+def relu(x):
+    return x * (x > 0)
+def drelu(x):
+    return 1. * (x > 0)
+
+
 class NeuralNetwork:
     def __init__(self, inputLayer=2, hiddenLayer=2, outputLayer=1, learningRate=0.0001, epochs=100):
         self.inputLayer = inputLayer
@@ -21,12 +27,12 @@ class NeuralNetwork:
         hidden = self.weights_ih @ input
         hidden += self.bias_h
         #Activation function
-        hidden = sigmoid(hidden)
+        hidden = relu(hidden)
         
         #Generating the outputs on last layer
         output = self.weights_ho @ hidden
         output += self.bias_o
-        output = sigmoid(output)
+        output = relu(output)
 
         #Sending back to the caller
         return output
@@ -36,18 +42,18 @@ class NeuralNetwork:
         hidden = self.weights_ih @ inputs
         hidden += self.bias_h
         #Activation function
-        hidden = sigmoid(hidden)
+        hidden = relu(hidden)
         
         #Generating the outputs on last layer
         outputs = self.weights_ho @ hidden
         outputs += self.bias_o
-        outputs = sigmoid(outputs)
+        outputs = relu(outputs)
 
         #Calculate the error
         output_errors = targets - outputs
         
         #Calculate hidden gradient
-        gradients = dsigmoid(outputs)
+        gradients = drelu(outputs)
         gradients = gradients @ output_errors
         gradients *= self.learningRate
         #print(hidden)
@@ -63,7 +69,7 @@ class NeuralNetwork:
 
 
         #Calculating Hidden Gradient
-        hidden_gradient = dsigmoid(hidden)
+        hidden_gradient = drelu(hidden)
         hidden_gradient = hidden_gradient * hidden_errors
         hidden_gradient *= self.learningRate
 
