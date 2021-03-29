@@ -9,64 +9,50 @@ from lib.neuralnetwork import NeuralNetwork
 from models.Pipe import *
 from models.SmartBird import *
 import pickle
+from numba import njit
 
 # loads file with best overall scoring bird from all trainings
-try:
-    bestBirdFile = open("bestBird.pkl", "rb")
-    bestBird = pickle.load(bestBirdFile)
-    bestBirdScore = bestBird.score
-    bestBird.setColor((255, 56, 255))
-    bestBirdFile.close()
 
-    print("Success in importing best model!")
-except:
-    bestBird = None
-    bestBirdScore = -1
-
-
+asset_up = None
+asset_down = None
 birds = []
 savedBirds = []
 pipes = []
 gamestate = True
-number_birds = 100
+number_birds = 20
+scores = np.zeros(number_birds)
+best_score = 0
 count = 0
 generations = 1
+frame_rate = 60
+mutation_rate = 0.08
 
 def setup():
     size(400, 600)
-    global birds, pipes, number_birds, generations, bestBirdScore
-    global bestBird
-    # 
+    global birds, pipes, number_birds, generations, asset_up, asset_down
+    asset_up = load_image("assets/frame-2.png")
+    asset_down = load_image("assets/frame-3.png")
     for i in range(number_birds):
         birds.append(Bird())
-    print(generations)
-    print(bestBirdScore)
-    # pixels = load_pixels()
-    # print(pixels.values)
+    print(f"Generation: {generations}")
+
     
 
 
 
 
 def draw():
-    # no_loop()
     background(118,88,152)
     global birds, pipes, count, number_birds, savedBirds
-    global generations, bestBird, bestBirdScore
-    if count % 60 == 0:
+    global generations, best_score
+    best_score += 5
+    text(f"Current Best Score is: {best_score}", (10, 50))
+    if count % frame_rate == 0:
         pipes.append(Pipe())
     if len(birds) == 0:
         count = 0
         generations += 1
-        print(generations)
-        # file = open("bestBird.pkl","wb")
-        # if savedBirds[0].score > bestBirdScore and bestBird != None:
-        #     bestBird = Bird(savedBirds[0].brain)
-        #     bestBirdScore = savedBirds[0].score
-        #     print(savedBirds[0].score)
-        #     bestBird.setColor((255, 56, 255))
-        #     pickle.dump(bestBird, file)
-        # file.close()
+        print(f"Generation: {generations}")
         nextGeneration()
         pipes = []
         pipes.append(Pipe())
@@ -77,54 +63,34 @@ def draw():
         pipes[i].update()
         for j in range(len(birds)-1, -1, -1):
             if pipes[i].hits(birds[j]):
-                # birds[j].fitness -= 15
-                # print(len(birds))
                 savedBirds.append(birds.pop(j))
             if pipes[i].offscreen():
                 pipes.pop(i)
                 birds[j].scoreAgain()
     
     for i in range(len(birds)-1, -1, -1):
-        
-        birds[i].think(pipes)
+        birds[i].think(pipes,)
         birds[i].update(gamestate)
-        birds[i].show()
-        # birds[i].edges()
-        # if birds[i].scored(pipes): 
-        #     birds[i].increaseScoreGA()
+        birds[i].show(asset_up, asset_down)
         if birds[i].offScreen():
             savedBirds.append(birds.pop(i))
     
-    # shows best bird ever trained
-    # displayBestBird()
-        
-
-def displayBestBird():
-    global bestBird
-    try:
-        bestBird.think(pipes)
-        bestBird.update(gamestate)
-        bestBird.show()
-    except:
-        pass
-
+       
 
 def nextGeneration():
-    global birds, number_birds, savedBirds
+    global birds, number_birds, savedBirds, best_score
     birds = []
     calculateFitness()
     for i in range(number_birds):
         birds.append(pickOne()),
 
     savedBirds = []
-    # for i in range(number_birds):
-    #     print(birds[i].brain.weights_ih)
-    #     print(birds[i].brain.weights_ho)
-    #     print()
+    best_score = 0
+
 
 
 def pickOne():
-    global savedBirds
+    global savedBirds, mutation_rate
     index = 0
     r = np.random.random()
     # print(r)
@@ -134,11 +100,10 @@ def pickOne():
     index -= 1
     bird = savedBirds[index]
     new_bird = Bird(bird.brain)
-    new_bird.mutate(0.01)
+    new_bird.mutate(mutation_rate)
     return new_bird
 
 def calculateFitness():
-    global savedBirds
     sum_score = 0
     for bird in savedBirds:
         sum_score += bird.score 
@@ -147,13 +112,12 @@ def calculateFitness():
 
 
 def startGame():
-    global birds, gamestate, numberBirds, savedBirds
-    # print("oiiiiiii?")
+    global birds, gamestate, savedBirds
     pipes = []
     bird = savedBirds
     savedBirds = []
     pipes.append(Pipe())
 
 if __name__ == '__main__':
-    run(frame_rate=60)
+    run(frame_rate=frame_rate)
 

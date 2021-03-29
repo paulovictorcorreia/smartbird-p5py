@@ -3,12 +3,12 @@ import numpy as np
 
 class Pipe:
     def __init__(self):
-        self.height = 125
+        self.height = 100
         self.top = random_uniform(height/2)
         self.bottom = self.top + self.height
         self.x = width
-        self.w = 100
-        self.speed = 5
+        self.w = 75
+        self.speed = 4
         
     
     def hits(self, bird):
