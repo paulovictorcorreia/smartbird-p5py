@@ -5,13 +5,15 @@ from numba import njit, vectorize, float64, jit
 def sigmoid(x):
     return 1/(1+np.exp(-x))
 
-@vectorize([float64(float64)])
+# @vectorize([float64(float64)])
+@njit
 def dsigmoid(x):
     return x * (1 - x)
 
-@vectorize([float64(float64)])
+# @vectorize([float64(float64)])
+@njit
 def tanh(x):
-    return np.sinh(x) / np.cosh(x)
+    return np.tanh(x)
 
 @vectorize([float64(float64)])
 def dtanh(x):
@@ -31,7 +33,7 @@ def mutate_matrix(array, mutation_rate):
         row_idx = int(i / array.shape[1])
         col_idx = i % array.shape[1]
         rand = np.random.random()
-        rand_val = np.random.normal()
+        rand_val = np.random.normal()*0.5
         if rand <= mutation_rate:
             array[row_idx, col_idx] += rand_val
 
@@ -39,7 +41,7 @@ def mutate_matrix(array, mutation_rate):
 def mutate_array(array, mutation_rate):
     for i in range(array.size):
         rand = np.random.random()
-        rand_val = np.random.normal()
+        rand_val = np.random.normal()*0.5
         if rand <= mutation_rate:
             array[i] += rand_val
 
@@ -49,11 +51,10 @@ class NeuralNetwork:
         self.inputLayer = inputLayer
         self.hiddenLayer = hiddenLayer
         self.outputLayer = outputLayer
-        np.random.seed(None)
-        self.weights_ih = np.random.normal(size=(hiddenLayer, inputLayer))
-        self.weights_ho = np.random.normal(size=(outputLayer, hiddenLayer))
-        self.bias_h = np.random.normal(size=(hiddenLayer))
-        self.bias_o = np.random.normal(size=(outputLayer))
+        self.weights_ih = np.random.random(size=(hiddenLayer, inputLayer))
+        self.weights_ho = np.random.random(size=(outputLayer, hiddenLayer))
+        self.bias_h = np.random.random(size=(hiddenLayer))
+        self.bias_o = np.random.random(size=(outputLayer))
 
         self.activation = sigmoid
         self.dactivation = dsigmoid
@@ -83,3 +84,5 @@ class NeuralNetwork:
     
     def copy(self):
         return NeuralNetwork(self.inputLayer, self.hiddenLayer, self.outputLayer)
+
+

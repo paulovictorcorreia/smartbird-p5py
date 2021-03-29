@@ -28,7 +28,7 @@ class Bird:
         self.fitness = 0
         self.input_size = 3
         if brain == None:
-            self.brain = NeuralNetwork(self.input_size, 64, 2)
+            self.brain = NeuralNetwork(self.input_size, 16, 2)
         else:
             self.brain = brain.copy()
 
@@ -39,16 +39,16 @@ class Bird:
         self.brain.mutate(mutationRate)
 
     def show(self, asset_up, asset_down):
-        image_mode(CENTER)
-        
-        if self.velocity <= 0:
-            image(asset_up, (self.x, self.y), size=(self.radius, self.radius))
-        else:
-            image(asset_down, (self.x, self.y), size=(self.radius, self.radius))
         # image_mode(CENTER)
-        # no_stroke()
-        # fill(*self.color)
-        # circle((self.x, self.y), self.radius)
+        
+        # if self.velocity <= 0:
+        #     image(asset_up, (self.x, self.y), size=(self.radius, self.radius))
+        # else:
+        #     image(asset_down, (self.x, self.y), size=(self.radius, self.radius))
+        image_mode(CENTER)
+        no_stroke()
+        fill(*self.color)
+        circle((self.x, self.y), self.radius)
 
     def think(self, pipes):
 

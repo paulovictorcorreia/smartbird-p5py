@@ -19,13 +19,13 @@ birds = []
 savedBirds = []
 pipes = []
 gamestate = True
-number_birds = 20
+number_birds = 25
 scores = np.zeros(number_birds)
 best_score = 0
 count = 0
 generations = 1
 frame_rate = 60
-mutation_rate = 0.08
+mutation_rate = 0.01
 
 def setup():
     size(400, 600)
@@ -46,7 +46,9 @@ def draw():
     global birds, pipes, count, number_birds, savedBirds
     global generations, best_score
     best_score += 5
+    fill(255)
     text(f"Current Best Score is: {best_score}", (10, 50))
+    text(f"Number of birds left is: {len(birds)}", (10, 25))
     if count % frame_rate == 0:
         pipes.append(Pipe())
     if len(birds) == 0:
