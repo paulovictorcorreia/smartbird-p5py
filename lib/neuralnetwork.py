@@ -1,115 +1,85 @@
 import numpy as np
+from numba import njit, vectorize, float64, jit
+
+@vectorize([float64(float64)])
 def sigmoid(x):
     return 1/(1+np.exp(-x))
+
+@vectorize([float64(float64)])
 def dsigmoid(x):
     return x * (1 - x)
+
+@vectorize([float64(float64)])
+def tanh(x):
+    return np.sinh(x) / np.cosh(x)
+
+@vectorize([float64(float64)])
+def dtanh(x):
+    return 1 / np.cosh(x) / np.cosh(x)
+
+@vectorize([float64(float64)])
+def relu(x):
+    return x * (x > 0)
+
+@vectorize([float64(float64)])
+def drelu(x):
+    return 1. * (x > 0)
+
+@njit
+def mutate_matrix(array, mutation_rate):
+    for i in range(array.size):
+        row_idx = int(i / array.shape[1])
+        col_idx = i % array.shape[1]
+        rand = np.random.random()
+        rand_val = np.random.normal()
+        if rand <= mutation_rate:
+            array[row_idx, col_idx] += rand_val
+
+@njit
+def mutate_array(array, mutation_rate):
+    for i in range(array.size):
+        rand = np.random.random()
+        rand_val = np.random.normal()
+        if rand <= mutation_rate:
+            array[i] += rand_val
+
+
 class NeuralNetwork:
-    def __init__(self, inputLayer=2, hiddenLayer=2, outputLayer=1, learningRate=0.0001, epochs=100):
+    def __init__(self, inputLayer=2, hiddenLayer=2, outputLayer=1):
         self.inputLayer = inputLayer
         self.hiddenLayer = hiddenLayer
         self.outputLayer = outputLayer
-        self.weights_ih = np.random.random((hiddenLayer, inputLayer)) * 2 - 1
-        self.weights_ho = np.random.random((outputLayer, hiddenLayer)) * 2 - 1
-        
-        self.bias_h = np.random.random((hiddenLayer)) * 2 - 1
-        self.bias_o = np.random.random((outputLayer)) * 2 - 1
+        np.random.seed(None)
+        self.weights_ih = np.random.normal(size=(hiddenLayer, inputLayer))
+        self.weights_ho = np.random.normal(size=(outputLayer, hiddenLayer))
+        self.bias_h = np.random.normal(size=(hiddenLayer))
+        self.bias_o = np.random.normal(size=(outputLayer))
 
-        self.learningRate = learningRate
-        self.epochs = epochs
+        self.activation = sigmoid
+        self.dactivation = dsigmoid
+
     def feedforward(self, input):
         #Generating the hidden outputs
-        hidden = self.weights_ih @ input
+        hidden = np.matmul(self.weights_ih, input)
         hidden += self.bias_h
         #Activation function
-        hidden = sigmoid(hidden)
+        hidden = self.activation(hidden)
         
         #Generating the outputs on last layer
-        output = self.weights_ho @ hidden
+        output = np.matmul(self.weights_ho, hidden)
         output += self.bias_o
-        output = sigmoid(output)
+        output = self.activation(output)
 
         #Sending back to the caller
         return output
     
-    def train(self, inputs, targets):
-         #Generating the hidden outputs
-        hidden = self.weights_ih @ inputs
-        hidden += self.bias_h
-        #Activation function
-        hidden = sigmoid(hidden)
-        
-        #Generating the outputs on last layer
-        outputs = self.weights_ho @ hidden
-        outputs += self.bias_o
-        outputs = sigmoid(outputs)
-
-        #Calculate the error
-        output_errors = targets - outputs
-        
-        #Calculate hidden gradient
-        gradients = dsigmoid(outputs)
-        gradients = gradients @ output_errors
-        gradients *= self.learningRate
-        #print(hidden)
-        #Updating hidden to output weights
-        weights_ho_deltas = hidden * gradients
-        #print(hidden)
-        self.weights_ho += weights_ho_deltas
-        self.bias_o += gradients
-
-        #calculating hidden errors
-        who_t = self.weights_ho.transpose()
-        hidden_errors = who_t @ output_errors
-
-
-        #Calculating Hidden Gradient
-        hidden_gradient = dsigmoid(hidden)
-        hidden_gradient = hidden_gradient * hidden_errors
-        hidden_gradient *= self.learningRate
-
-        #Updating input to hidden weights
-        inputs_T = inputs.reshape(1, self.inputLayer)
-        hidden_gradient_aux = hidden_gradient.reshape(self.hiddenLayer, 1)
-        weights_ih_deltas = hidden_gradient_aux @ inputs_T
-        self.weights_ih += weights_ih_deltas
-        self.bias_h += hidden_gradient
-    def fit(self, X, y):
-        for _ in range(self.epochs):
-            for i, value in enumerate(X):
-                self.train(value, y[i])        
-        return self
-    def predict(self, X):
-        output_list = []
-        inputSize = X.shape[0]
-        for i in range(inputSize):
-            output = self.feedforward(X[i])
-            output_list.append(output)
-        output_array = np.array(output_list)
-        return output_array
-
+    # @jit
     def mutate(self, mutationRate):
-        
-        for i, weights in enumerate(self.weights_ho):
-            for j, weight in enumerate(weights):
-                ratio = np.random.random()
-                if ratio < mutationRate:
-                    self.weights_ho[i][j] += np.random.normal(0, 0.1) * 0.5
-
-        for i, weights in enumerate(self.weights_ih):
-            for j, weight in enumerate(weights):
-                ratio = np.random.random()
-                if ratio < mutationRate:
-                    self.weights_ih[i][j] += np.random.normal(0, 0.1) * 0.5
-                    
-        for i, weights in enumerate(self.bias_h):
-            ratio = np.random.random()
-            if ratio < mutationRate:
-                self.bias_h[i] += np.random.normal(0, 0.1) * 0.5
-        
-        for i, weights in enumerate(self.bias_o):
-            ratio = np.random.random()
-            if ratio < mutationRate:
-                self.bias_o[i] += np.random.normal(0, 0.1) * 0.5
-        
+        mutate_matrix(self.weights_ho, mutationRate)
+        mutate_matrix(self.weights_ih, mutationRate)
+        mutate_array(self.bias_h, mutationRate)
+        mutate_array(self.bias_o, mutationRate)
+    
+    
     def copy(self):
         return NeuralNetwork(self.inputLayer, self.hiddenLayer, self.outputLayer)
